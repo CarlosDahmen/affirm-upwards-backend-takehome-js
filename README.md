@@ -1,4 +1,22 @@
-# Node.js Specific Instructions
+# Merchant Configuration Endpoint
+
+This project consists of an api endpoint (at /api/merchant_config) that allows a registered merchant to update their  pre qualification status, and minimum/maximum loan amounts for their store.
+
+Note that this Api endpoint can only be used to update the merchant configuration; it requires the merchant ID to already exist in the DB. If a request is made with an invalid or nonexistent merchant ID, it will return a 400 error.
+
+Some data validation checks are implemented (see js/repo/index, MerchantRepo verify_merchant_configuration). Data validation checks need to be reviewed based on business logic (ie. min/max loan amount caps, etc.) The frontend should also perform a check to ensure all required fields min loan amount, max loan amount and prequalification are being provided.
+
+The DB schema was modified to include the prequal_enabled (boolean) property. There is currently no default value assigned to it. Should prequal be enabled or disabled by default?
+
+
+# Unit Tests
+The following Unit Tests have been implemented for the route:
+
+* POST request to /api/merchant_config returns 200 if merchant configuration was updated successfully
+* POST request to /api/merchant_config returns 400 if there is no merchant registered to the merchant ID
+* POST request to /api/merchant_config returns 400 if minimum loan amount is invalid
+* POST request to /api/merchant_config returns 400 if maximum loan amount is invalid
+* POST request to  /api/merchant_config returns 400 if prequal value is invalid
 
 
 ## Setting up your Development Environment
@@ -6,60 +24,3 @@
 npm i
 npm start
 ```
-
-You'll require `node` (tested on v15.6.0) and `npm` (v7.6.3). We recommend [nvm](https://github.com/nvm-sh/nvm) for node version management, and setup takes just a few minutes. 
-
-We also recommend a desktop client for making local test requests. [Postman](https://www.postman.com/downloads/) is optional, and we have a [Postman collection with an example POST](https://documenter.getpostman.com/view/13975560/TzCV2PK6). At the top you can change the language from curl (which you can run in your terminal) to javascript.
-
-You will **NOT** need to be familiar with OpenAPI or Swagger. Implementing an API contract for endpoint definition is not in the scope of the JS problem.
-
-The code base uses Express to handle a very lightweight frontend at http://localhost:3000/. Updating the frontend is also not in the scope of the problem.
-
-Tests can be run on port 5678 with `npm test`. If you have a daemon process running on that port (`Error: listen EADDRINUSE: address already in use :::5678`) you may be able to force kill by
-```
-lsof -i tcp:5678  
-kill -9 $PID
-```
-As a headsup, Jest sets `NODE_ENV=test`, and sequelize logging is suppressed in this case. 
-
-## API 
-
-Recommended: [pre-defined Postman configuration](https://documenter.getpostman.com/view/13975560/TzCV2PK6)
-
-You will be working on creating a new endpoint, `POST /api/merchant_config/`. 
-
-An example loan application endpoint has been set up: `POST /api/loan_application/`.
-
-### POST /api/loan_application
-
-The only Merchant seeded has `merchant_id = 1`. You will need the merchant_id to hit the "Init Loan Application" endpoint:
-```
-Headers {
-    Content-Type: application/json
-}
-
-Body {
-    "data": {
-        "requested_amount_cents": 10000,
-        "currency": "USD",
-        "merchant_id": 1
-    }
-}
-```
-
-Using CURL:
-
-```
-curl --location --request POST 'http://localhost:3000/api/loan_application' \
---header 'Content-Type: application/json' \
---data-raw '{
-    "data": {
-        "requested_amount_cents": 10000,
-        "currency": "USD",
-        "merchant_id": 1
-    }
-}
-'
-```
-
-
