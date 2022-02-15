@@ -67,6 +67,8 @@ export class MerchantRepo {
             maximum_loan_amount > minimum_loan_amount &&
             (typeof prequal_enabled === 'boolean');
   }
+
+  static set_merchant_configuration = async (merchant_conf, new_merchant_conf) => merchant_conf.update(new_merchant_conf)
 }
 
 export class TermsRepo {

@@ -20,6 +20,13 @@ router.post('/', async (req, res, next) => {
   if (!MerchantRepo.verify_merchant_configuration(data)){
     return res.status(400).send('Merchant Data Validation Error')
   }
+
+  try {
+    await MerchantRepo.set_merchant_configuration(merchant_conf, data);
+    return res.status(200).send();
+  } catch (err) {
+    return res.status(400).send('Error updating merchant configuration');
+  }
 })
 
 export default router
