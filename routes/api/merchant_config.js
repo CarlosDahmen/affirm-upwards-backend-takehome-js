@@ -17,6 +17,9 @@ router.post('/', async (req, res, next) => {
     });
   }
 
+  if (!MerchantRepo.verify_merchant_configuration(data)){
+    return res.status(400).send('Merchant Data Validation Error')
+  }
 })
 
 export default router
